@@ -196,7 +196,7 @@ app.get("/", sendPage("index.html"));
 app.get("/login", sendPage("login.html"));
 app.get("/signup", sendPage("signup.html"));
 app.get("/dashboard", sendPage("dashboard.html"));
-app.get("/pair", sendPage("pair.html"));
+app.get("/pair", (_, res) => res.redirect("/dashboard"));
 
 // ============ SOCKET.IO — PAIRING ============
 io.on("connection", (socket) => {
