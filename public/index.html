@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OZU CRASHER V2 — The Most Powerful WhatsApp Bug Bot</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+    :root{--p:#00f0ff;--s:#7b2fff;--a:#ff2d75;--d:#0a0a0f;--c:rgba(15,15,25,0.85)}
+    *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;background:var(--d);color:#e0e0e0;overflow-x:hidden}
+    .bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,240,255,.03)1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.03)1px,transparent 1px);background-size:60px 60px;animation:g 20s linear infinite}
+    @keyframes g{100%{transform:translate(60px,60px)}}
+    .orbs{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden}
+    .ob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;animation:of 15s ease-in-out infinite}
+    .ob:nth-child(1){width:400px;height:400px;background:var(--s);top:-100px;left:-100px}
+    .ob:nth-child(2){width:350px;height:350px;background:var(--p);bottom:-80px;right:-80px;animation-delay:-5s}
+    .ob:nth-child(3){width:250px;height:250px;background:var(--a);top:50%;left:50%;animation-delay:-10s}
+    @keyframes of{0%,100%{transform:translate(0,0)scale(1)}25%{transform:translate(30px,-40px)scale(1.1)}50%{transform:translate(-20px,30px)scale(.9)}75%{transform:translate(40px,20px)scale(1.05)}}
+    .pts{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+    .pt{position:absolute;width:3px;height:3px;background:var(--p);border-radius:50%;opacity:0;animation:pr 6s ease-in-out infinite}
+    @keyframes pr{0%{opacity:0;transform:translateY(100vh)scale(0)}50%{opacity:.8}100%{opacity:0;transform:translateY(-20vh)scale(1.5)}}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:15px 40px;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,15,.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,240,255,.1);transition:.3s}
+    nav.scrolled{padding:10px 40px;background:rgba(10,10,15,.95)}
+    .logo{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;letter-spacing:2px}
+    .logo span{-webkit-text-fill-color:var(--a);font-size:14px;margin-left:4px}
+    .nl{display:flex;gap:25px;align-items:center;list-style:none}
+    .nl a{color:#aaa;text-decoration:none;font-size:14px;font-weight:500;transition:.3s;position:relative}
+    .nl a:hover{color:var(--p)}
+    .nl a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--p);transition:width .3s}
+    .nl a:hover::after{width:100%}
+    .nc{padding:8px 22px!important;background:linear-gradient(135deg,var(--p),var(--s))!important;border-radius:25px!important;color:#000!important;font-weight:700!important;font-size:13px!important;letter-spacing:1px;text-transform:uppercase;box-shadow:0 0 20px rgba(0,240,255,.2)}
+    .nc::after{display:none!important}
+    .nc:hover{transform:translateY(-2px)!important;box-shadow:0 0 30px rgba(0,240,255,.4)!important}
+    .ham{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:1001}
+    .ham span{display:block;width:25px;height:2px;background:var(--p);transition:.3s}
+    .hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:120px 20px 60px}
+    .hb{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;border:1px solid rgba(0,240,255,.2);background:rgba(0,240,255,.05);margin-bottom:24px;font-size:13px;color:var(--p);animation:fid .8s ease}
+    .hb .dot{width:8px;height:8px;background:#0f0;border-radius:50%;animation:pd 1.5s infinite}
+    @keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+    .hero h1{font-family:'Orbitron';font-size:clamp(36px,7vw,72px);font-weight:900;line-height:1.1;margin-bottom:10px;animation:fiu 1s ease}
+    .hero h1 .gt{background:linear-gradient(135deg,var(--p),var(--s),var(--a));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200% 200%;animation:gs 4s ease infinite}
+    @keyframes gs{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    .hero .sub{font-size:clamp(15px,2.5vw,20px);color:#888;max-width:600px;margin:0 auto 30px;line-height:1.6;animation:fiu 1s ease .2s both}
+    .hbtns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;animation:fiu 1s ease .4s both}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:50px;font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;border:none;transition:.35s}
+    .bp{background:linear-gradient(135deg,var(--p),var(--s));color:#000;box-shadow:0 0 25px rgba(0,240,255,.25)}
+    .bp:hover{transform:translateY(-3px);box-shadow:0 0 40px rgba(0,240,255,.5)}
+    .bs{background:transparent;color:var(--p);border:1px solid rgba(0,240,255,.3)}
+    .bs:hover{background:rgba(0,240,255,.05);transform:translateY(-3px)}
+    .hs{display:flex;gap:50px;margin-top:50px;animation:fiu 1s ease .6s both}
+    .st{text-align:center}.sn{font-family:'Orbitron';font-size:28px;font-weight:900;color:var(--p)}
+    .sl{font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+    section{position:relative;z-index:1;padding:80px 20px}
+    .sh{text-align:center;margin-bottom:50px}
+    .sh .tag{display:inline-block;padding:4px 14px;border-radius:15px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;background:rgba(123,47,255,.15);color:var(--s);border:1px solid rgba(123,47,255,.2)}
+    .sh h2{font-family:'Orbitron';font-size:clamp(24px,4vw,38px);font-weight:700;color:#fff}
+    .sh p{color:#666;max-width:500px;margin:10px auto 0;font-size:15px}
+    .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:1100px;margin:0 auto}
+    .fc{background:var(--c);border:1px solid rgba(255,255,255,.05);border-radius:16px;padding:30px 25px;transition:.4s;position:relative;overflow:hidden}
+    .fc::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--p),var(--s));opacity:0;transition:opacity .4s}
+    .fc:hover::before{opacity:1}.fc:hover{transform:translateY(-6px);border-color:rgba(0,240,255,.15);box-shadow:0 20px 40px rgba(0,0,0,.4)}
+    .fi{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px}
+    .fi1{background:rgba(0,240,255,.1)}.fi2{background:rgba(123,47,255,.1)}.fi3{background:rgba(255,45,117,.1)}
+    .fi4{background:rgba(0,255,100,.1)}.fi5{background:rgba(255,200,0,.1)}.fi6{background:rgba(255,100,50,.1)}
+    .fc h3{font-size:17px;font-weight:700;color:#fff;margin-bottom:8px}.fc p{font-size:13px;color:#777;line-height:1.6}
+    .steps{display:flex;gap:30px;max-width:900px;margin:0 auto;flex-wrap:wrap;justify-content:center}
+    .step{flex:1;min-width:220px;max-width:280px;text-align:center}
+    .step-n{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:'Orbitron';font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--p),var(--s));color:#000;box-shadow:0 0 25px rgba(0,240,255,.2)}
+    .step h3{font-size:16px;color:#fff;margin-bottom:8px}.step p{font-size:13px;color:#777;line-height:1.5}
+    .cp{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+    .cg{background:var(--c);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:20px}
+    .cg h4{font-size:14px;font-weight:700;color:var(--p);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .cl{list-style:none}.cl li{padding:5px 0;font-size:13px;color:#888;font-family:monospace;display:flex;align-items:center;gap:8px}
+    .cl li::before{content:'▸';color:var(--s)}
+    .ctas{text-align:center;padding:100px 20px}
+    .ctab{max-width:650px;margin:0 auto;padding:50px 40px;border-radius:24px;background:linear-gradient(135deg,rgba(0,240,255,.05),rgba(123,47,255,.05));border:1px solid rgba(0,240,255,.1);position:relative;overflow:hidden}
+    .ctab::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(0,240,255,.03),transparent,rgba(123,47,255,.03),transparent);animation:rb 10s linear infinite}
+    @keyframes rb{100%{transform:rotate(360deg)}}.ctab>*{position:relative;z-index:1}
+    .ctab h2{font-family:'Orbitron';font-size:clamp(22px,4vw,32px);font-weight:900;color:#fff;margin-bottom:12px}
+    .ctab p{color:#888;margin-bottom:25px;font-size:15px}
+    footer{position:relative;z-index:1;text-align:center;padding:30px 20px;border-top:1px solid rgba(255,255,255,.05)}
+    footer p{font-size:13px;color:#555}footer a{color:var(--p);text-decoration:none}
+    @keyframes fiu{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fid{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+    .rv{opacity:0;transform:translateY(40px);transition:all .8s cubic-bezier(.16,1,.3,1)}.rv.vis{opacity:1;transform:translateY(0)}
+    @media(max-width:768px){nav{padding:12px 20px}.nl{position:fixed;top:0;right:-100%;width:70%;height:100vh;background:rgba(10,10,15,.97);flex-direction:column;padding:80px 30px 30px;transition:right .4s;border-left:1px solid rgba(0,240,255,.1)}.nl.open{right:0}.ham{display:flex}.hs{gap:25px}.sn{font-size:22px}.steps{flex-direction:column;align-items:center}}
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="orbs"><div class="ob"></div><div class="ob"></div><div class="ob"></div></div>
+  <div class="pts" id="pts"></div>
+  <nav id="nav">
+    <a href="/" class="logo">OZU<span>V2</span></a>
+    <ul class="nl" id="nl">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#commands">Commands</a></li>
+      <li><a href="/login" class="nc">⚡ Get Started</a></li>
+    </ul>
+    <div class="ham" onclick="document.getElementById('nl').classList.toggle('open')"><span></span><span></span><span></span></div>
+  </nav>
+  <section class="hero">
+    <div class="hb"><span class="dot"></span>Bot Online — v2.0</div>
+    <h1><span class="gt">OZU CRASHER</span><br><span style="font-size:.5em;color:#888;font-family:Inter,sans-serif;font-weight:400">The Most Powerful WhatsApp Bug Bot</span></h1>
+    <p class="sub">Advanced crash, delay & exploit engine built for speed. Pair your bot in seconds with our web interface — no QR scan needed.</p>
+    <div class="hbtns">
+      <a href="/signup" class="btn bp">🚀 Create Account</a>
+      <a href="#features" class="btn bs">☠️ Explore Features</a>
+    </div>
+    <div class="hs">
+      <div class="st"><div class="sn">25+</div><div class="sl">Bug Commands</div></div>
+      <div class="st"><div class="sn">3</div><div class="sl">Platforms</div></div>
+      <div class="st"><div class="sn">24/7</div><div class="sl">Uptime</div></div>
+    </div>
+  </section>
+  <section id="features">
+    <div class="sh rv"><span class="tag">⚡ Features</span><h2>What OZU Crasher Can Do</h2><p>Packed with powerful tools across Android, iOS, Samsung & Group attacks</p></div>
+    <div class="fg">
+      <div class="fc rv"><div class="fi fi1">🐞</div><h3>Android Bugs</h3><p>Crash, delay-hard, force-close, invisible and trash bugs targeting Android WhatsApp clients.</p></div>
+      <div class="fc rv"><div class="fi fi2">🍎</div><h3>iOS Exploits</h3><p>Specialized delay-ios, trash-ios, kill-ios, fc-ios and invisible-ios payloads for iPhones.</p></div>
+      <div class="fc rv"><div class="fi fi3">📱</div><h3>Samsung Attacks</h3><p>Driller, killer, delaying, crashing and force-UI bugs tuned for Samsung One UI devices.</p></div>
+      <div class="fc rv"><div class="fi fi4">💣</div><h3>Group Bugs</h3><p>Kill-gc, delay-gc, and hijack commands to crash or take over entire WhatsApp groups.</p></div>
+      <div class="fc rv"><div class="fi fi5">👥</div><h3>Group Management</h3><p>Tagall, hidetag, kick, kickall, promote, demote, lock/unlock, revoke, setname and more.</p></div>
+      <div class="fc rv"><div class="fi fi6">🔗</div><h3>Web Pair System</h3><p>No QR code needed — just enter your number and get a pairing code instantly from the browser.</p></div>
+    </div>
+  </section>
+  <section id="how">
+    <div class="sh rv"><span class="tag">📋 Guide</span><h2>How To Pair Your Bot</h2><p>Three simple steps to get your OZU Crasher up and running</p></div>
+    <div class="steps">
+      <div class="step rv"><div class="step-n">1</div><h3>Create Account</h3><p>Sign up with a username and email. It takes less than 30 seconds.</p></div>
+      <div class="step rv"><div class="step-n">2</div><h3>Get Pairing Code</h3><p>Enter your WhatsApp number in the dashboard and receive an 8-digit pairing code.</p></div>
+      <div class="step rv"><div class="step-n">3</div><h3>Bot Goes Live</h3><p>Enter the code in WhatsApp → Linked Devices → Link with phone number. Type .menu to start!</p></div>
+    </div>
+  </section>
+  <section id="commands">
+    <div class="sh rv"><span class="tag">⌨️ Commands</span><h2>Command Preview</h2><p>A glimpse of available commands after pairing</p></div>
+    <div class="cp">
+      <div class="cg rv"><h4>🐞 Bug Commands</h4><ul class="cl"><li>.crash [number]</li><li>.delay [number]</li><li>.invisible [number]</li><li>.force-close [number]</li><li>.trash [number]</li><li>.ozu-delay [number]</li></ul></div>
+      <div class="cg rv"><h4>🍎 iOS / Samsung</h4><ul class="cl"><li>.kill-ios [number]</li><li>.delay-ios [number]</li><li>.driller [number]</li><li>.killer [number]</li><li>.crashing [number]</li><li>.force-ui [number]</li></ul></div>
+      <div class="cg rv"><h4>👥 Group Tools</h4><ul class="cl"><li>.kill-gc</li><li>.delay-gc</li><li>.hijack</li><li>.tagall</li><li>.hidetag [text]</li><li>.kick @user</li></ul></div>
+      <div class="cg rv"><h4>👑 Owner</h4><ul class="cl"><li>.addowner [number]</li><li>.public / .self</li><li>.broadcast [text]</li><li>.runtime</li><li>.ping</li><li>.num [number]</li></ul></div>
+    </div>
+  </section>
+  <section class="ctas">
+    <div class="ctab rv">
+      <h2>Ready to Deploy?</h2>
+      <p>Create your account and pair your OZU Crasher bot in under a minute.</p>
+      <a href="/signup" class="btn bp">🚀 Create Account</a>
+    </div>
+  </section>
+  <footer><p>© 2025 OZU CRASHER V2 — Built by <a href="https://t.me/badboistillchasing" target="_blank">bad_boi_stillchasing</a></p></footer>
+  <script>
+    (function(){const c=document.getElementById('pts');for(let i=0;i<30;i++){const p=document.createElement('div');p.classList.add('pt');p.style.left=Math.random()*100+'%';p.style.animationDelay=Math.random()*6+'s';p.style.animationDuration=(4+Math.random()*4)+'s';c.appendChild(p)}})();
+    window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',scrollY>50)});
+    document.querySelectorAll('.nl a').forEach(a=>a.addEventListener('click',()=>document.getElementById('nl').classList.remove('open')));
+    const ob=new IntersectionObserver(e=>{e.forEach((x,i)=>{if(x.isIntersecting){setTimeout(()=>x.target.classList.add('vis'),i*80);ob.unobserve(x.target)}})},{threshold:.15});
+    document.querySelectorAll('.rv').forEach(el=>ob.observe(el));
+  </script>
+</body>
+</html>

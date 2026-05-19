@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OZU CRASHER V2 — Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+    :root{--p:#00f0ff;--s:#7b2fff;--a:#ff2d75;--d:#0a0a0f;--c:rgba(15,15,25,.88);--ok:#00ff6a;--er:#ff2d55}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:var(--d);color:#e0e0e0;min-height:100vh;overflow-x:hidden}
+    .bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,240,255,.02)1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.02)1px,transparent 1px);background-size:60px 60px}
+    .orbs{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden}
+    .ob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.2;animation:of 20s ease-in-out infinite}
+    .ob:nth-child(1){width:350px;height:350px;background:var(--s);top:-80px;right:-60px}
+    .ob:nth-child(2){width:280px;height:280px;background:var(--p);bottom:-60px;left:-40px;animation-delay:-8s}
+    @keyframes of{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-25px)}}
+    .dn{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 30px;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,15,.88);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,240,255,.08)}
+    .logo{font-family:'Orbitron';font-size:20px;font-weight:900;background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;letter-spacing:2px}
+    .logo em{-webkit-text-fill-color:var(--a);font-style:normal;font-size:13px;margin-left:3px}
+    .nr{display:flex;align-items:center;gap:16px}
+    .up{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:rgba(0,240,255,.06);border:1px solid rgba(0,240,255,.1);font-size:13px;color:var(--p);font-weight:600}
+    .up .av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--s));display:flex;align-items:center;justify-content:center;font-size:12px;color:#000;font-weight:800}
+    .lo{background:none;border:1px solid rgba(255,45,117,.2);color:var(--a);font-size:12px;font-weight:600;padding:6px 14px;border-radius:16px;cursor:pointer;transition:.3s}
+    .lo:hover{background:rgba(255,45,117,.08)}
+    .dm{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:90px 20px 40px}
+    .wel{text-align:center;margin-bottom:36px}
+    .wel h1{font-family:'Orbitron';font-size:clamp(20px,4vw,28px);font-weight:800;color:#fff}
+    .wel h1 span{color:var(--p)}.wel p{font-size:14px;color:#666;margin-top:6px}
+    .sr{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:30px}
+    .sc{background:var(--c);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:20px 18px;position:relative;overflow:hidden}
+    .sc::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px}
+    .s1::before{background:var(--p)}.s2::before{background:var(--s)}.s3::before{background:var(--ok)}.s4::before{background:var(--a)}
+    .sc .si{font-size:22px;margin-bottom:8px}
+    .sc .sv{font-family:'Orbitron';font-size:22px;font-weight:900;color:#fff}
+    .sc .sl{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+    .sec{background:var(--c);border:1px solid rgba(255,255,255,.05);border-radius:18px;padding:30px;margin-bottom:20px;position:relative;overflow:hidden}
+    .sec::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,var(--p),var(--s))}
+    .sec h2{font-family:'Orbitron';font-size:17px;font-weight:800;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+    .sec .desc{font-size:13px;color:#666;margin-bottom:22px}
+    .pf{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap}
+    .piw{flex:1;min-width:200px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:0 14px;transition:.3s}
+    .piw:focus-within{border-color:var(--p);box-shadow:0 0 0 3px rgba(0,240,255,.08)}
+    .piw .ic{font-size:17px;color:#444}.piw input{flex:1;background:none;border:none;outline:none;padding:13px 0;font-size:15px;color:#fff;font-family:'JetBrains Mono';letter-spacing:1px}.piw input::placeholder{color:#3a3a4a}
+    .pb{padding:13px 28px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--p),var(--s));color:#000;transition:.3s;white-space:nowrap;display:flex;align-items:center;gap:8px}
+    .pb:hover:not(:disabled){box-shadow:0 0 25px rgba(0,240,255,.3);transform:translateY(-1px)}.pb:disabled{opacity:.4;cursor:not-allowed}
+    .pb .spin{width:15px;height:15px;border:2px solid transparent;border-top-color:#000;border-right-color:#000;border-radius:50%;animation:sp .6s linear infinite;display:none}@keyframes sp{100%{transform:rotate(360deg)}}
+    .pst{margin-top:16px;padding:12px 14px;border-radius:10px;font-size:13px;display:none;align-items:center;gap:8px}
+    .pi{background:rgba(0,240,255,.05);border:1px solid rgba(0,240,255,.12);color:var(--p)}
+    .pe{background:rgba(255,45,85,.06);border:1px solid rgba(255,45,85,.15);color:var(--er)}
+    .cr{display:none;margin-top:20px;text-align:center;animation:fu .5s ease}@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .cr .lb{font-size:11px;color:#777;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px}
+    .cb{display:inline-block;font-family:'JetBrains Mono';font-size:32px;font-weight:900;letter-spacing:6px;color:var(--p);background:rgba(0,240,255,.04);border:2px solid rgba(0,240,255,.15);border-radius:14px;padding:16px 28px;cursor:pointer;transition:.3s;position:relative}
+    .cb:hover{border-color:var(--p);background:rgba(0,240,255,.07)}
+    .cb .tp{position:absolute;top:-7px;right:-7px;background:var(--p);color:#000;font-size:8px;font-weight:800;padding:2px 7px;border-radius:6px;letter-spacing:1px}
+    .ci{margin-top:14px;font-size:12px;color:#666;line-height:1.7;text-align:left;max-width:360px;margin-left:auto;margin-right:auto}.ci strong{color:#999}
+    .sb{display:none;text-align:center;margin-top:20px;animation:fu .6s ease}
+    .sb .big{font-size:48px;margin-bottom:10px}
+    .sb h3{font-family:'Orbitron';font-size:18px;color:var(--ok);margin-bottom:6px}.sb p{font-size:13px;color:#777}
+    .sb .cmd{display:inline-block;margin-top:12px;padding:8px 20px;border-radius:8px;background:rgba(0,255,106,.05);border:1px solid rgba(0,255,106,.12);font-family:'JetBrains Mono';font-size:15px;color:var(--ok);font-weight:700;letter-spacing:2px}
+    .cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+    .cc{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);font-size:12px;font-family:'JetBrains Mono';color:#888;transition:.3s}
+    .cc:hover{border-color:rgba(0,240,255,.15);color:var(--p)}.cc span{color:var(--s);margin-right:4px}
+    footer{position:relative;z-index:1;text-align:center;padding:20px;font-size:12px;color:#333}footer a{color:var(--p);text-decoration:none}
+    @media(max-width:600px){.dn{padding:12px 16px}.nr{gap:8px}.up{padding:4px 10px;font-size:12px}.pf{flex-direction:column}.cb{font-size:24px;letter-spacing:4px;padding:12px 20px}}
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="orbs"><div class="ob"></div><div class="ob"></div></div>
+  <nav class="dn">
+    <a href="/" class="logo">OZU<em>V2</em></a>
+    <div class="nr">
+      <div class="up"><div class="av" id="av">?</div><span id="nu">User</span></div>
+      <button class="lo" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+  <main class="dm">
+    <div class="wel"><h1>Welcome, <span id="wn">User</span> 👋</h1><p>Manage your OZU Crasher bot from here</p></div>
+    <div class="sr">
+      <div class="sc s1"><div class="si">🤖</div><div class="sv" id="bs">Offline</div><div class="sl">Bot Status</div></div>
+      <div class="sc s2"><div class="si">📊</div><div class="sv" id="pl">Free</div><div class="sl">Plan</div></div>
+      <div class="sc s3"><div class="si">⚡</div><div class="sv">25+</div><div class="sl">Commands</div></div>
+      <div class="sc s4"><div class="si">🔗</div><div class="sv" id="ln">—</div><div class="sl">Linked Number</div></div>
+    </div>
+    <div class="sec" id="ps">
+      <h2>📱 Pair Your Bot</h2>
+      <p class="desc">Enter your WhatsApp number (with country code) to get a pairing code. No QR needed!</p>
+      <div id="pfw">
+        <div class="pf">
+          <div class="piw"><span class="ic">📱</span><input type="tel" id="phi" placeholder="e.g. 2349017593981" maxlength="15" autocomplete="off"></div>
+          <button class="pb" id="pbtn" onclick="reqPair()"><span class="spin" id="spn"></span><span id="pbt">⚡ Get Code</span></button>
+        </div>
+        <div class="pst pi" id="psi"></div>
+        <div class="pst pe" id="pse"></div>
+      </div>
+      <div class="cr" id="crs">
+        <div class="lb">Your Pairing Code</div>
+        <div class="cb" id="cbx" onclick="cpCode()"><span id="cv">--------</span><span class="tp">COPY</span></div>
+        <div class="ci"><strong>Steps:</strong><br>1. Open <strong>WhatsApp</strong> on your phone<br>2. Go to <strong>Settings → Linked Devices</strong><br>3. Tap <strong>"Link a Device"</strong><br>4. Tap <strong>"Link with phone number instead"</strong><br>5. Enter the code above ☝️</div>
+        <div class="pst pi" style="display:flex;margin-top:16px">⏳ Waiting for you to enter the code in WhatsApp...</div>
+      </div>
+      <div class="sb" id="sbox">
+        <div class="big">🎉</div><h3>Bot Paired Successfully!</h3><p>Your OZU Crasher is now live. Send this to your bot:</p><div class="cmd">.menu</div>
+      </div>
+    </div>
+    <div class="sec">
+      <h2>⌨️ Quick Commands</h2><p class="desc">Commands you can use after pairing</p>
+      <div class="cg">
+        <div class="cc"><span>.</span>menu</div><div class="cc"><span>.</span>bugmenu</div><div class="cc"><span>.</span>crash</div>
+        <div class="cc"><span>.</span>delay</div><div class="cc"><span>.</span>kill-ios</div><div class="cc"><span>.</span>driller</div>
+        <div class="cc"><span>.</span>hijack</div><div class="cc"><span>.</span>tagall</div><div class="cc"><span>.</span>kick</div>
+        <div class="cc"><span>.</span>ping</div><div class="cc"><span>.</span>runtime</div><div class="cc"><span>.</span>public</div>
+      </div>
+    </div>
+  </main>
+  <footer>© 2025 OZU CRASHER V2 — <a href="https://t.me/badboistillchasing" target="_blank">bad_boi_stillchasing</a></footer>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket=io();
+    const $=id=>document.getElementById(id);
+    const token=localStorage.getItem('ozu_token');
+    const userStr=localStorage.getItem('ozu_user');
+    if(!token||!userStr)window.location.href='/login';
+    let user;try{user=JSON.parse(userStr)}catch(e){window.location.href='/login'}
+    $('wn').textContent=user.username;$('nu').textContent=user.username;$('av').textContent=user.username.charAt(0).toUpperCase();$('pl').textContent=user.plan||'Free';
+    if(user.botLinked){$('bs').textContent='Online';$('bs').style.color='#00ff6a';$('ln').textContent=user.botNumber||'—'}
+    function logout(){fetch('/api/logout',{method:'POST',headers:{Authorization:'Bearer '+token}}).finally(()=>{localStorage.removeItem('ozu_token');localStorage.removeItem('ozu_user');window.location.href='/login'})}
+    $('phi').addEventListener('input',()=>{$('phi').value=$('phi').value.replace(/[^0-9]/g,'')});
+    $('phi').addEventListener('keydown',e=>{if(e.key==='Enter')reqPair()});
+    function reqPair(){
+      const n=$('phi').value.replace(/[^0-9]/g,'');
+      if(n.length<10){shErr('Enter a valid number with country code');return}
+      if(n.startsWith('0')){shErr("Don't start with 0 — use country code (234...)");return}
+      $('pbtn').disabled=true;$('pbt').textContent='Connecting...';$('spn').style.display='block';
+      $('pse').style.display='none';shInfo('Connecting to WhatsApp servers...');
+      socket.emit('pair-request',{phoneNumber:n,token});
+    }
+    socket.on('pair-status',d=>shInfo(d.message));
+    socket.on('pair-code',d=>{$('pfw').style.display='none';$('crs').style.display='block';$('cv').textContent=d.code});
+    socket.on('pair-success',d=>{$('crs').style.display='none';$('sbox').style.display='block';$('bs').textContent='Online';$('bs').style.color='#00ff6a';user.botLinked=true;localStorage.setItem('ozu_user',JSON.stringify(user))});
+    socket.on('pair-error',d=>{shErr(d.message);rstBtn()});
+    function shInfo(m){$('psi').innerHTML='⏳ '+m;$('psi').style.display='flex';$('pse').style.display='none'}
+    function shErr(m){$('pse').innerHTML='❌ '+m;$('pse').style.display='flex';$('psi').style.display='none'}
+    function rstBtn(){$('pbtn').disabled=false;$('pbt').textContent='⚡ Get Code';$('spn').style.display='none'}
+    function cpCode(){const c=$('cv').textContent;navigator.clipboard.writeText(c).then(()=>{const b=$('cbx');b.style.borderColor='#00ff6a';b.querySelector('.tp').textContent='COPIED!';setTimeout(()=>{b.style.borderColor='rgba(0,240,255,.15)';b.querySelector('.tp').textContent='COPY'},2000)})}
+  </script>
+</body>
+</html>

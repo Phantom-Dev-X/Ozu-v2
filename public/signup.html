@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OZU CRASHER V2 — Create Account</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+    :root{--p:#00f0ff;--s:#7b2fff;--a:#ff2d75;--d:#0a0a0f;--c:rgba(15,15,25,.92);--ok:#00ff6a;--er:#ff2d55}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:var(--d);color:#e0e0e0;min-height:100vh;overflow-x:hidden;display:flex;align-items:center;justify-content:center}
+    .bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,240,255,.03)1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.03)1px,transparent 1px);background-size:60px 60px;animation:g 20s linear infinite}@keyframes g{100%{transform:translate(60px,60px)}}
+    .orbs{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden}
+    .ob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.3;animation:of 18s ease-in-out infinite}
+    .ob:nth-child(1){width:380px;height:380px;background:var(--a);top:-100px;right:-80px}
+    .ob:nth-child(2){width:320px;height:320px;background:var(--s);bottom:-80px;left:-80px;animation-delay:-7s}
+    .ob:nth-child(3){width:180px;height:180px;background:var(--p);top:50%;right:30%;animation-delay:-13s;opacity:.2}
+    @keyframes of{0%,100%{transform:translate(0,0)scale(1)}33%{transform:translate(25px,-35px)scale(1.08)}66%{transform:translate(-15px,25px)scale(.92)}}
+    .pts{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+    .pt{position:absolute;width:2px;height:2px;background:var(--s);border-radius:50%;opacity:0;animation:r 7s ease-in-out infinite}
+    @keyframes r{0%{opacity:0;transform:translateY(100vh)scale(0)}40%{opacity:.5}100%{opacity:0;transform:translateY(-10vh)scale(1.5)}}
+    .w{position:relative;z-index:1;width:100%;max-width:440px;padding:20px}
+    .card{background:var(--c);border:1px solid rgba(255,255,255,.06);border-radius:24px;padding:40px 36px 32px;box-shadow:0 40px 80px rgba(0,0,0,.55);position:relative;overflow:hidden;backdrop-filter:blur(12px)}
+    .card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--a),var(--s),var(--p))}
+    .lg{text-align:center;margin-bottom:4px}.lg a{font-family:'Orbitron';font-size:26px;font-weight:900;background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;letter-spacing:2px}.lg a em{-webkit-text-fill-color:var(--a);font-style:normal;font-size:15px;margin-left:3px}
+    .hd{text-align:center;margin-bottom:28px}
+    .ic{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,rgba(255,45,117,.08),rgba(123,47,255,.08));border:2px solid rgba(255,45,117,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px;animation:ig 3s ease-in-out infinite}
+    @keyframes ig{0%,100%{box-shadow:0 0 0 0 rgba(255,45,117,.15)}50%{box-shadow:0 0 0 14px rgba(255,45,117,0)}}
+    .hd h1{font-family:'Orbitron';font-size:20px;font-weight:800;color:#fff}.hd p{font-size:13px;color:#666;margin-top:5px}
+    .fg{margin-bottom:16px}.fg label{display:block;font-size:11px;font-weight:700;color:#777;margin-bottom:6px;text-transform:uppercase;letter-spacing:1.2px}
+    .ib{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:0 14px;transition:.3s}
+    .ib:focus-within{border-color:var(--p);box-shadow:0 0 0 3px rgba(0,240,255,.08)}
+    .ib.vb{border-color:var(--ok)!important}.ib.eb{border-color:var(--er)!important}
+    .ib .io{font-size:17px;color:#444;flex-shrink:0}
+    .ib input{flex:1;background:none;border:none;outline:none;padding:12px 0;font-size:14px;color:#fff;font-family:'Inter'}
+    .ib input::placeholder{color:#3a3a4a}
+    .ib .ck{font-size:14px;flex-shrink:0}
+    .pwt{background:none;border:none;color:#555;font-size:17px;cursor:pointer;padding:4px;transition:.2s}.pwt:hover{color:var(--p)}
+    .ps{margin-top:8px;display:flex;gap:4px;align-items:center}
+    .pb{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden}
+    .pf{height:100%;width:0;border-radius:3px;transition:width .4s,background .4s}
+    .pl{font-size:10px;color:#555;min-width:40px;text-align:right}
+    .toast{display:none;align-items:center;gap:8px;padding:11px 14px;border-radius:10px;margin-bottom:14px;font-size:12px;font-weight:500;animation:si .35s ease}
+    @keyframes si{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .te{background:rgba(255,45,85,.08);border:1px solid rgba(255,45,85,.18);color:var(--er)}
+    .ts{background:rgba(0,255,106,.06);border:1px solid rgba(0,255,106,.15);color:var(--ok)}
+    .ab{width:100%;padding:14px;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:1px;background:linear-gradient(135deg,var(--a),var(--s));color:#fff;transition:.3s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+    .ab:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 0 32px rgba(255,45,117,.25)}
+    .ab:disabled{opacity:.45;cursor:not-allowed}
+    .ab .sp{width:16px;height:16px;border:2px solid transparent;border-top-color:#fff;border-right-color:#fff;border-radius:50%;animation:spi .65s linear infinite;display:none}
+    @keyframes spi{100%{transform:rotate(360deg)}}
+    .tm{font-size:11px;color:#444;text-align:center;margin-top:14px;line-height:1.5}.tm a{color:var(--p);text-decoration:none}
+    .dv{display:flex;align-items:center;gap:14px;margin:22px 0}.dv::before,.dv::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06)}.dv span{font-size:11px;color:#444;text-transform:uppercase;letter-spacing:1px}
+    .af{text-align:center;font-size:13px;color:#555}.af a{color:var(--p);text-decoration:none;font-weight:600}
+    .bh{display:block;text-align:center;margin-top:16px;font-size:12px;color:#444;text-decoration:none;transition:.2s}.bh:hover{color:var(--p)}
+    @media(max-width:480px){.card{padding:28px 20px 24px;border-radius:18px}}
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="orbs"><div class="ob"></div><div class="ob"></div><div class="ob"></div></div>
+  <div class="pts" id="pts"></div>
+  <div class="w">
+    <div class="card">
+      <div class="lg"><a href="/">OZU<em>V2</em></a></div>
+      <div class="hd"><div class="ic">🚀</div><h1>Create Account</h1><p>Sign up to deploy your OZU Crasher bot</p></div>
+      <div class="toast te" id="te"><span>❌</span> <span id="tem"></span></div>
+      <div class="toast ts" id="ts"><span>✅</span> <span id="tsm"></span></div>
+      <form id="frm" onsubmit="go(event)">
+        <div class="fg"><label>Username</label><div class="ib" id="ub"><span class="io">👤</span><input type="text" id="usr" placeholder="Choose a username" autocomplete="username" required minlength="3"><span class="ck" id="uc"></span></div></div>
+        <div class="fg"><label>Email Address</label><div class="ib" id="eb"><span class="io">📧</span><input type="email" id="em" placeholder="your@email.com" autocomplete="email" required><span class="ck" id="ec"></span></div></div>
+        <div class="fg"><label>Password</label><div class="ib" id="ppb"><span class="io">🔒</span><input type="password" id="pw" placeholder="Min. 6 characters" autocomplete="new-password" required minlength="6"><button type="button" class="pwt" onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password'">👁️</button></div><div class="ps"><div class="pb"><div class="pf" id="pf"></div></div><span class="pl" id="pl"></span></div></div>
+        <div class="fg"><label>Confirm Password</label><div class="ib" id="cb"><span class="io">🔒</span><input type="password" id="cpw" placeholder="Re-enter password" autocomplete="new-password" required><span class="ck" id="cc"></span></div></div>
+        <button type="submit" class="ab" id="btn"><span class="sp" id="sp"></span><span id="bt">🚀 Create Account</span></button>
+      </form>
+      <div class="tm">By creating an account, you agree to the<br><a href="#">Terms of Service</a> & <a href="#">Privacy Policy</a></div>
+      <div class="dv"><span>or</span></div>
+      <div class="af">Already have an account? <a href="/login">Login</a></div>
+      <a href="/" class="bh">← Back to Home</a>
+    </div>
+  </div>
+  <script>
+    (function(){const c=document.getElementById('pts');for(let i=0;i<25;i++){const p=document.createElement('div');p.classList.add('pt');p.style.left=Math.random()*100+'%';p.style.animationDelay=Math.random()*7+'s';p.style.animationDuration=(5+Math.random()*5)+'s';c.appendChild(p)}})();
+    if(localStorage.getItem('ozu_token'))window.location.href='/dashboard';
+    const $=id=>document.getElementById(id);
+    $('usr').addEventListener('input',()=>{const v=$('usr').value.trim();if(!v){$('ub').className='ib';$('uc').textContent='';return}if(v.length>=3){$('ub').className='ib vb';$('uc').textContent='✅'}else{$('ub').className='ib eb';$('uc').textContent='❌'}});
+    $('em').addEventListener('input',()=>{const v=$('em').value.trim();if(!v){$('eb').className='ib';$('ec').textContent='';return}if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){$('eb').className='ib vb';$('ec').textContent='✅'}else{$('eb').className='ib eb';$('ec').textContent='❌'}});
+    $('pw').addEventListener('input',()=>{const v=$('pw').value;let s=0;if(v.length>=6)s++;if(v.length>=10)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;const pct=Math.min(s/5*100,100);$('pf').style.width=pct+'%';if(s<=1){$('pf').style.background='#ff2d55';$('pl').textContent='Weak';$('pl').style.color='#ff2d55'}else if(s<=3){$('pf').style.background='#ffa500';$('pl').textContent='Medium';$('pl').style.color='#ffa500'}else{$('pf').style.background='#00ff6a';$('pl').textContent='Strong';$('pl').style.color='#00ff6a'}chkC()});
+    $('cpw').addEventListener('input',chkC);
+    function chkC(){const v=$('cpw').value;if(!v){$('cb').className='ib';$('cc').textContent='';return}if(v===$('pw').value){$('cb').className='ib vb';$('cc').textContent='✅'}else{$('cb').className='ib eb';$('cc').textContent='❌'}}
+    function err(m){$('tem').textContent=m;$('te').style.display='flex';$('ts').style.display='none'}
+    function ok(m){$('tsm').textContent=m;$('ts').style.display='flex';$('te').style.display='none'}
+    async function go(e){
+      e.preventDefault();
+      const u=$('usr').value.trim(),em=$('em').value.trim(),p=$('pw').value,c=$('cpw').value;
+      if(!u||!em||!p||!c){err('Please fill in all fields');return}
+      if(u.length<3){err('Username must be at least 3 characters');return}
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){err('Invalid email address');return}
+      if(p.length<6){err('Password must be at least 6 characters');return}
+      if(p!==c){err('Passwords do not match');return}
+      const btn=$('btn'),bt=$('bt'),sp=$('sp');
+      btn.disabled=true;bt.textContent='Creating account...';sp.style.display='block';
+      try{
+        const r=await fetch('/api/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,email:em,password:p})});
+        const d=await r.json();
+        if(d.success){localStorage.setItem('ozu_token',d.token);localStorage.setItem('ozu_user',JSON.stringify(d.user));ok('Account created! Redirecting...');setTimeout(()=>window.location.href='/dashboard',1200)}
+        else{err(d.message||'Signup failed');btn.disabled=false;bt.textContent='🚀 Create Account';sp.style.display='none'}
+      }catch(x){err('Network error. Try again.');btn.disabled=false;bt.textContent='🚀 Create Account';sp.style.display='none'}
+    }
+  </script>
+</body>
+</html>
