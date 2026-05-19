@@ -27,7 +27,11 @@ const { Server } = require("socket.io");
 // ============ EXPRESS + SOCKET.IO ============
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: { origin: "*" },
+  pingTimeout: 60000,
+  pingInterval: 25000,
+});
 const PORT = process.env.PORT || 3000;
 
 // ============ DB PATHS ============
@@ -36,20 +40,16 @@ const SESSIONS_DIR = path.join(__dirname, "sessions");
 const USERS_FILE = path.join(DB_DIR, "users.json");
 const TOKENS_FILE = path.join(DB_DIR, "sessions_map.json");
 
-// Ensure directories exist on startup
+// Ensure dirs & files exist on startup
 [DB_DIR, SESSIONS_DIR].forEach((d) => {
   if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
 });
-// Ensure DB files exist
-[USERS_FILE, TOKENS_FILE].forEach((f) => {
-  if (!fs.existsSync(f)) fs.writeFileSync(f, f.endsWith("users.json") ? "[]" : "{}");
-});
-if (!fs.existsSync(path.join(DB_DIR, "settings.json")))
-  fs.writeFileSync(path.join(DB_DIR, "settings.json"), "{}");
-if (!fs.existsSync(path.join(DB_DIR, "owner.json")))
-  fs.writeFileSync(path.join(DB_DIR, "owner.json"), '["2349017593981"]');
-if (!fs.existsSync(path.join(DB_DIR, "premium.json")))
-  fs.writeFileSync(path.join(DB_DIR, "premium.json"), '["2349017593981"]');
+const ensureFile = (f, def) => { if (!fs.existsSync(f)) fs.writeFileSync(f, def); };
+ensureFile(USERS_FILE, "[]");
+ensureFile(TOKENS_FILE, "{}");
+ensureFile(path.join(DB_DIR, "settings.json"), "{}");
+ensureFile(path.join(DB_DIR, "owner.json"), '["2349017593981"]');
+ensureFile(path.join(DB_DIR, "premium.json"), '["2349017593981"]');
 
 // ============ MIDDLEWARE ============
 app.use(express.json());
@@ -57,8 +57,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // ============ DB HELPERS ============
 const readJSON = (file, fallback) => {
-  try { return JSON.parse(fs.readFileSync(file, "utf8")); }
-  catch { return fallback; }
+  try { return JSON.parse(fs.readFileSync(file, "utf8")); } catch { return fallback; }
 };
 const writeJSON = (file, data) => fs.writeFileSync(file, JSON.stringify(data, null, 2));
 const loadUsers = () => readJSON(USERS_FILE, []);
@@ -77,11 +76,9 @@ function getUserFromToken(token) {
   const tokens = loadTokens();
   const session = tokens[token];
   if (!session) return null;
-  const users = loadUsers();
-  return users.find((u) => u.id === session.userId) || null;
+  return loadUsers().find((u) => u.id === session.userId) || null;
 }
 
-// ============ AUTH MIDDLEWARE ============
 function requireAuth(req, res, next) {
   const token = req.headers.authorization?.replace("Bearer ", "");
   const user = getUserFromToken(token);
@@ -92,8 +89,6 @@ function requireAuth(req, res, next) {
 }
 
 // ============ AUTH API ============
-
-// POST /api/signup
 app.post("/api/signup", (req, res) => {
   const { username, email, password } = req.body;
   if (!username || !email || !password)
@@ -113,15 +108,10 @@ app.post("/api/signup", (req, res) => {
 
   const { hash, salt } = hashPw(password);
   const user = {
-    id: crypto.randomUUID(),
-    username: username.trim(),
-    email: email.trim().toLowerCase(),
-    password: hash,
-    salt,
-    createdAt: new Date().toISOString(),
-    plan: "free",
-    botLinked: false,
-    botNumber: "",
+    id: crypto.randomUUID(), username: username.trim(),
+    email: email.trim().toLowerCase(), password: hash, salt,
+    createdAt: new Date().toISOString(), plan: "free",
+    botLinked: false, botNumber: "",
   };
   users.push(user);
   saveUsers(users);
@@ -132,14 +122,11 @@ app.post("/api/signup", (req, res) => {
   saveTokens(tokens);
 
   res.json({
-    success: true,
-    message: "Account created!",
-    token,
+    success: true, message: "Account created!", token,
     user: { id: user.id, username: user.username, email: user.email, plan: user.plan, botLinked: user.botLinked, botNumber: user.botNumber },
   });
 });
 
-// POST /api/login
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (!username || !password)
@@ -147,9 +134,8 @@ app.post("/api/login", (req, res) => {
 
   const users = loadUsers();
   const user = users.find(
-    (u) =>
-      u.username.toLowerCase() === username.trim().toLowerCase() ||
-      u.email.toLowerCase() === username.trim().toLowerCase()
+    (u) => u.username.toLowerCase() === username.trim().toLowerCase() ||
+           u.email.toLowerCase() === username.trim().toLowerCase()
   );
   if (!user) return res.status(401).json({ success: false, message: "Invalid username or password" });
 
@@ -163,30 +149,19 @@ app.post("/api/login", (req, res) => {
   saveTokens(tokens);
 
   res.json({
-    success: true,
-    message: "Login successful!",
-    token,
+    success: true, message: "Login successful!", token,
     user: { id: user.id, username: user.username, email: user.email, plan: user.plan, botLinked: user.botLinked, botNumber: user.botNumber },
   });
 });
 
-// GET /api/me
 app.get("/api/me", requireAuth, (req, res) => {
   const u = req.user;
-  res.json({
-    success: true,
-    user: { id: u.id, username: u.username, email: u.email, plan: u.plan, botLinked: u.botLinked, botNumber: u.botNumber },
-  });
+  res.json({ success: true, user: { id: u.id, username: u.username, email: u.email, plan: u.plan, botLinked: u.botLinked, botNumber: u.botNumber } });
 });
 
-// POST /api/logout
 app.post("/api/logout", (req, res) => {
   const token = req.headers.authorization?.replace("Bearer ", "");
-  if (token) {
-    const tokens = loadTokens();
-    delete tokens[token];
-    saveTokens(tokens);
-  }
+  if (token) { const t = loadTokens(); delete t[token]; saveTokens(t); }
   res.json({ success: true });
 });
 
@@ -198,102 +173,173 @@ app.get("/signup", sendPage("signup.html"));
 app.get("/dashboard", sendPage("dashboard.html"));
 app.get("/pair", (_, res) => res.redirect("/dashboard"));
 
-// ============ SOCKET.IO — PAIRING ============
+// ============ HELPER: sleep ============
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// ============ SOCKET.IO — PAIRING (FIXED) ============
 io.on("connection", (socket) => {
   console.log(chalk.green("🌐 Client connected:", socket.id));
 
   socket.on("pair-request", async (data) => {
     const { phoneNumber, token } = data;
 
+    // 1. Validate auth
     const user = getUserFromToken(token);
     if (!user) return socket.emit("pair-error", { message: "Session expired. Please login again." });
 
-    const clean = (phoneNumber || "").replace(/[^0-9]/g, "");
-    if (clean.length < 10) return socket.emit("pair-error", { message: "Invalid phone number." });
+    // 2. Clean & validate number
+    let clean = (phoneNumber || "").replace(/[^0-9]/g, "");
+    if (clean.length < 10) return socket.emit("pair-error", { message: "Invalid phone number. Use country code (e.g. 2349017593981)" });
 
     console.log(chalk.yellow(`📱 Pair request: ${clean} (user: ${user.username})`));
+    socket.emit("pair-status", { message: "Initializing connection..." });
 
-    let sock;
     const sessId = `pair_${clean}_${Date.now()}`;
     const sessPath = path.join(SESSIONS_DIR, sessId);
+    let sock = null;
+    let pairingDone = false;
+
+    // Cleanup helper
+    const cleanup = () => {
+      try { if (sock) sock.end(); } catch (_) {}
+      try { if (fs.existsSync(sessPath)) fs.rmSync(sessPath, { recursive: true, force: true }); } catch (_) {}
+    };
 
     try {
+      // 3. Create fresh session
       const { state, saveCreds } = await useMultiFileAuthState(sessPath);
       const { version } = await fetchLatestBaileysVersion();
 
+      // 4. Create socket — register ALL event listeners BEFORE anything happens
       sock = makeWASocket({
         version,
-        auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "silent" })) },
+        auth: {
+          creds: state.creds,
+          keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "silent" })),
+        },
         logger: pino({ level: "silent" }),
         printQRInTerminal: false,
         browser: Browsers.ubuntu("Chrome"),
+        syncFullHistory: false,
+        generateHighQualityLinkPreview: false,
       });
 
-      socket.emit("pair-status", { message: "Connecting to WhatsApp servers..." });
-
-      // Request pairing code after socket is ready
-      setTimeout(async () => {
-        try {
-          const code = await sock.requestPairingCode(clean);
-          console.log(chalk.green(`✅ Code: ${code}`));
-          socket.emit("pair-code", { code });
-        } catch (err) {
-          console.error(chalk.red("❌ Code error:"), err.message);
-          socket.emit("pair-error", { message: "Failed to generate code. Try again." });
-          try { sock.end(); } catch (_) {}
-          try { fs.rmSync(sessPath, { recursive: true, force: true }); } catch (_) {}
-        }
-      }, 3000);
-
+      // 5. REGISTER connection.update FIRST (before requesting code)
       sock.ev.on("connection.update", async (update) => {
         const { connection, lastDisconnect } = update;
 
         if (connection === "open") {
-          console.log(chalk.green(`✅ Paired: ${clean}`));
+          pairingDone = true;
+          console.log(chalk.green(`✅ Paired successfully: ${clean}`));
           socket.emit("pair-success", { message: "Bot paired successfully!" });
+
           await saveCreds();
 
-          // Save to user record
+          // Update user DB
           const users = loadUsers();
           const u = users.find((x) => x.id === user.id);
           if (u) { u.botLinked = true; u.botNumber = clean; saveUsers(users); }
 
-          // Copy session to permanent user folder
+          // Copy session to permanent folder
           const permPath = path.join(SESSIONS_DIR, `user_${user.id}`);
           if (!fs.existsSync(permPath)) fs.mkdirSync(permPath, { recursive: true });
-          for (const f of fs.readdirSync(sessPath)) {
-            fs.copyFileSync(path.join(sessPath, f), path.join(permPath, f));
-          }
+          try {
+            for (const f of fs.readdirSync(sessPath)) {
+              fs.copyFileSync(path.join(sessPath, f), path.join(permPath, f));
+            }
+          } catch (e) { console.error("Session copy error:", e.message); }
 
-          // Start the bot
+          // Start bot
           setTimeout(() => startBot(permPath), 2000);
         }
 
         if (connection === "close") {
-          const code = lastDisconnect?.error?.output?.statusCode;
-          if (code === DisconnectReason.loggedOut) {
-            socket.emit("pair-error", { message: "Logged out. Try again." });
-            try { fs.rmSync(sessPath, { recursive: true, force: true }); } catch (_) {}
+          if (!pairingDone) {
+            const statusCode = lastDisconnect?.error?.output?.statusCode;
+            const reason = lastDisconnect?.error?.output?.payload?.message || "Connection closed";
+            console.log(chalk.red(`❌ Connection closed: ${statusCode} - ${reason}`));
+
+            if (statusCode === DisconnectReason.loggedOut) {
+              socket.emit("pair-error", { message: "Logged out by WhatsApp. Try again." });
+            } else if (statusCode === 408) {
+              socket.emit("pair-error", { message: "Connection timed out. Try again." });
+            } else if (statusCode === 401) {
+              socket.emit("pair-error", { message: "Unauthorized. The number may not be registered on WhatsApp." });
+            } else if (statusCode === 515) {
+              socket.emit("pair-error", { message: "WhatsApp server restart. Please try again." });
+            }
+            cleanup();
           }
         }
       });
 
+      // 6. Save creds whenever updated
       sock.ev.on("creds.update", saveCreds);
+
+      // 7. Wait for Baileys to actually connect to WA servers before requesting code
+      socket.emit("pair-status", { message: "Connecting to WhatsApp servers..." });
+
+      // Wait a bit for the WS connection to establish, then request code
+      // We use a smarter approach: wait until creds are generated
+      await sleep(5000); // Give Baileys 5 seconds to connect
+
+      // Check if connection already closed/failed
+      if (pairingDone) return;
+
+      // 8. Request pairing code
+      try {
+        socket.emit("pair-status", { message: "Generating pairing code..." });
+        const code = await sock.requestPairingCode(clean);
+
+        if (code) {
+          console.log(chalk.green(`✅ Code generated: ${code}`));
+          socket.emit("pair-code", { code: code });
+        } else {
+          socket.emit("pair-error", { message: "Empty code received. Try again." });
+          cleanup();
+        }
+      } catch (err) {
+        console.error(chalk.red("❌ Pairing code error:"), err.message || err);
+
+        let msg = "Failed to generate pairing code.";
+        if (err.message?.includes("not registered")) {
+          msg = "This number is not registered on WhatsApp.";
+        } else if (err.message?.includes("rate")) {
+          msg = "Too many attempts. Wait a few minutes and try again.";
+        } else if (err.message?.includes("timeout") || err.message?.includes("timed out")) {
+          msg = "Connection timed out. Check your server's internet and try again.";
+        } else if (err.message?.includes("closed")) {
+          msg = "Connection was closed. Please try again.";
+        }
+
+        socket.emit("pair-error", { message: msg });
+        cleanup();
+      }
+
+      // 9. Auto-cleanup after 5 minutes if pairing never completes
+      setTimeout(() => {
+        if (!pairingDone) {
+          console.log(chalk.gray(`⏰ Pair timeout for ${clean}`));
+          cleanup();
+        }
+      }, 5 * 60 * 1000);
+
     } catch (err) {
-      console.error(chalk.red("❌ Pair error:"), err);
-      socket.emit("pair-error", { message: "Server error. Try again." });
+      console.error(chalk.red("❌ Fatal pair error:"), err);
+      socket.emit("pair-error", { message: "Server error: " + (err.message || "Unknown") });
+      cleanup();
     }
   });
 
   socket.on("disconnect", () => console.log(chalk.gray("🔌 Disconnected:", socket.id)));
 });
 
-// ============ BOT ============
+// ============ BOT ENGINE ============
 const activeBots = new Set();
 
 async function startBot(sessPath) {
   if (!fs.existsSync(sessPath)) return;
-  if (activeBots.has(sessPath)) return; // prevent duplicate
+  if (activeBots.has(sessPath)) return;
   activeBots.add(sessPath);
 
   try {
@@ -306,6 +352,7 @@ async function startBot(sessPath) {
       logger: pino({ level: "silent" }),
       printQRInTerminal: false,
       browser: Browsers.ubuntu("Chrome"),
+      syncFullHistory: false,
     });
 
     stillchasing.public = true;
@@ -322,7 +369,7 @@ async function startBot(sessPath) {
           console.log(chalk.red("❌ Bot logged out:", sessPath));
           try { fs.rmSync(sessPath, { recursive: true, force: true }); } catch (_) {}
         } else {
-          console.log(chalk.yellow("🔄 Reconnecting..."));
+          console.log(chalk.yellow("🔄 Reconnecting bot..."));
           setTimeout(() => startBot(sessPath), 5000);
         }
       }
@@ -358,41 +405,32 @@ function formatMsg(conn, m) {
     m.chat = m.key.remoteJid;
     m.fromMe = m.key.fromMe;
     m.isGroup = m.chat?.endsWith("@g.us");
-    m.sender = m.fromMe
-      ? conn.user.id.split(":")[0] + "@s.whatsapp.net"
-      : m.key.participant || m.key.remoteJid;
+    m.sender = m.fromMe ? conn.user.id.split(":")[0] + "@s.whatsapp.net" : m.key.participant || m.key.remoteJid;
     m.participant = m.key.participant || m.key.remoteJid;
   }
   if (m.message) {
     m.mtype = getContentType(m.message);
-    m.msg =
-      m.mtype === "viewOnceMessage"
-        ? m.message[m.mtype].message[getContentType(m.message[m.mtype].message)]
-        : m.message[m.mtype];
-    m.body =
-      m.message?.conversation ||
-      m.msg?.caption ||
-      m.msg?.text ||
+    m.msg = m.mtype === "viewOnceMessage"
+      ? m.message[m.mtype].message[getContentType(m.message[m.mtype].message)]
+      : m.message[m.mtype];
+    m.body = m.message?.conversation || m.msg?.caption || m.msg?.text ||
       (m.mtype === "buttonsResponseMessage" && m.msg?.selectedButtonId) ||
-      (m.mtype === "viewOnceMessage" && m.msg?.caption) ||
-      m.text || "";
+      (m.mtype === "viewOnceMessage" && m.msg?.caption) || m.text || "";
     m.text = m.body;
-    m.quoted = m.msg?.contextInfo?.quotedMessage
-      ? {
-          ...m.msg.contextInfo.quotedMessage,
-          key: { remoteJid: m.chat, fromMe: false, id: m.msg.contextInfo.stanzaId, participant: m.msg.contextInfo.participant },
-          message: m.msg.contextInfo.quotedMessage,
-          msg: m.msg.contextInfo.quotedMessage[getContentType(m.msg.contextInfo.quotedMessage)],
-          mtype: getContentType(m.msg.contextInfo.quotedMessage),
-        }
-      : null;
+    m.quoted = m.msg?.contextInfo?.quotedMessage ? {
+      ...m.msg.contextInfo.quotedMessage,
+      key: { remoteJid: m.chat, fromMe: false, id: m.msg.contextInfo.stanzaId, participant: m.msg.contextInfo.participant },
+      message: m.msg.contextInfo.quotedMessage,
+      msg: m.msg.contextInfo.quotedMessage[getContentType(m.msg.contextInfo.quotedMessage)],
+      mtype: getContentType(m.msg.contextInfo.quotedMessage),
+    } : null;
     m.pushName = m.pushName || "No Name";
   }
   m.reply = (text) => conn.sendMessage(m.chat, { text }, { quoted: m });
   return m;
 }
 
-// ============ START ============
+// ============ START SERVER ============
 server.listen(PORT, () => {
   console.log(chalk.cyan.bold(`
 ╔════════════════════════════════════════════╗
